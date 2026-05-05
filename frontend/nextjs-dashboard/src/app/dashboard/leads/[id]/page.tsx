@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 async function getLeadDetail(id: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/dashboard/leads/${id}`, { cache: "no-store" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/dashboard/leads/${id}`, { cache: "no-store", headers: { "Cache-Control": "no-cache"} });
     if (res.status === 404) return null;
     if (!res.ok) throw new Error("Failed to fetch lead");
     return res.json();
@@ -14,6 +14,7 @@ async function getLeadDetail(id: string) {
     return null;
   }
 }
+
 
 export default async function LeadDetailPage({ params }: any) {
   const resolvedParams = await params;   // 👈 THIS is the key
@@ -31,6 +32,7 @@ export default async function LeadDetailPage({ params }: any) {
   }
 
   const { lead, ai_decision, action } = data;
+  const reply = lead?.reply;
 
   return (
     <div className="flex flex-col gap-6">
@@ -91,7 +93,11 @@ export default async function LeadDetailPage({ params }: any) {
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Confidence</span>
-                <span className="text-sm text-[#0d0d0d]">{Math.round(ai_decision.confidence * 100)}%</span>
+                <span className="text-sm text-[#0d0d0d]">
+                    {ai_decision?.confidence !== undefined
+                        ? `${Math.round(Number(ai_decision.confidence) * 100)}%`
+                        : "N/A"}
+                </span>
               </div>
               <div className="flex flex-col gap-1 mt-2">
                 <span className="text-xs font-semibold text-[#666666] uppercase tracking-wider">Reasoning</span>
@@ -126,6 +132,33 @@ export default async function LeadDetailPage({ params }: any) {
             <p className="text-sm text-[#666666]">No automated action was triggered.</p>
           )}
         </div>
+
+        {/* AI Reply Card */}
+        <div className="bg-white border border-[rgba(0,0,0,0.05)] rounded-[16px] p-6 sm:p-8">
+          <h2 className="text-lg font-bold text-[#0d0d0d] mb-4">AI Reply</h2>
+
+          {reply ? (
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-semibold text-[#666666] uppercase tracking-wider mb-2">Generated Response</span>
+              <p className="text-sm text-[#0d0d0d] whitespace-pre-wrap">{reply}</p>
+
+              <div className="mt-2 border-t border-[rgba(0,0,0,0.05)] pt-4">
+                <span className="text-xs font-semibold text-[#666666] uppercase tracking-wider mb-2 block">Used For</span>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-1 bg-[#f0f0f0] text-xs font-medium text-[#666666] rounded capitalize">
+                    {ai_decision?.category || "N/A"}
+                  </span>
+                  <span className="px-2 py-1 bg-[#f0f0f0] text-xs font-medium text-[#666666] rounded">
+                    {ai_decision?.intent || "N/A"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-[#666666]">No AI reply generated for this lead.</p>
+          )}
+        </div>
+
       </div>
     </div>
   );

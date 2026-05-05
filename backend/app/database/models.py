@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Float, DateTime, Integer, ForeignKey
+from sqlalchemy import Column, String, Float, DateTime, Integer, ForeignKey, Text
 from sqlalchemy.sql import func
 from app.database.session import Base
 
@@ -17,6 +17,7 @@ class Lead(Base):
     message = Column(String, nullable=True)
     context_summary = Column(String, nullable=True) # This field is reserved for future summarization and conversation context extraction using AI.
     status = Column(String, default="new")
+    reply = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class AIDecision(Base):

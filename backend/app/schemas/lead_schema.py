@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 from pydantic import EmailStr
 
+
 class LeadCreate(BaseModel):
     name: Optional[str] = None
     email: EmailStr
@@ -29,3 +30,10 @@ class LeadResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AIDecisionResponse(BaseModel):
+    intent: str
+    lead_score: int
+    category: str
+    confidence: float
+    reasoning: str

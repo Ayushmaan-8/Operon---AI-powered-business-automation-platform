@@ -62,6 +62,7 @@ def get_dashboard_lead_detail(id: str, db: Session = Depends(get_db)):
                 "message": lead.message,
                 "context_summary": lead.context_summary,
                 "status": lead.status,
+                "reply": lead.reply,
                 "created_at": lead.created_at.isoformat() if lead.created_at else None
             },
             "ai_decision": {
@@ -69,7 +70,7 @@ def get_dashboard_lead_detail(id: str, db: Session = Depends(get_db)):
                 "intent": ai_decision.intent,
                 "lead_score": ai_decision.lead_score,
                 "category": ai_decision.category,
-                "confid`ence": ai_decision.confidence,
+                "confidence": ai_decision.confidence,
                 "reasoning": ai_decision.reasoning,
                 "created_at": ai_decision.created_at.isoformat() if ai_decision.created_at else None
             } if ai_decision else None,
