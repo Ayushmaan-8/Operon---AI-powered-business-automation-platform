@@ -26,3 +26,13 @@ app.include_router(webhook.router)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
+def root():
+    return """
+    <h1>Operon AI Backend 🚀</h1>
+    <p>Status: Running</p>
+    <p><a href="/docs">API Docs</a></p>
+    """    
